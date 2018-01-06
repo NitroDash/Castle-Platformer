@@ -1,0 +1,38 @@
+{
+    "width":80,
+    "height":60,
+    "rects": [
+        {"x":0,"y":0,"width":80,"height":60,"fill":6},
+        {"x":0,"y":0,"width":80,"height":1,"fill":4},
+        {"x":0,"y":20,"width":1,"height":39,"fill":5},
+        {"x":0,"y":59,"width":80,"height":1,"fill":4},
+        {"x":79,"y":1,"width":1,"height":48,"fill":3},
+        {"x":78,"y":1,"width":1,"height":48,"fill":13},
+        {"x":1,"y":58,"width":65,"height":1,"fill":10},
+        {"x":53,"y":55,"width":11,"height":1,"fill":2},
+        {"x":35,"y":50,"width":11,"height":1,"fill":2},
+        {"x":35,"y":20,"width":11,"height":1,"fill":2},
+        {"x":0,"y":20,"width":24,"height":2,"fill":4},
+        {"x":24,"y":20,"width":1,"height":2,"fill":5},
+        {"x":52,"y":16,"width":11,"height":1,"fill":2}
+    ],
+    "worldCoords":{"x":5,"y":7},
+    "platforms":[
+        {"x1":550,"y1":400,"x2":550,"y2":1100,"speed":3}
+    ],
+    "detailGrids":[
+        {
+            "fill":[6,3,4,5,10],
+            "grid":[
+                "4000004",
+                "1222223"
+            ],
+            "positions":[{"x":35,"y":30},{"x":18,"y":30}]
+        }
+    ],
+    "enemies":[
+        {"type":"Snake","x":770,"y":620},
+        {"type":"Snake","x":430,"y":620},
+        {"type":"Teleporter","x":810,"y":400,"id":1}
+    ]
+}

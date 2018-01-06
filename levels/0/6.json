@@ -1,0 +1,30 @@
+{
+    "width":40,
+    "height":120,
+    "rects": [
+        {"x":0,"y":0,"width":40,"height":120,"fill":6},
+        {"x":0,"y":0,"width":40,"height":1,"fill":4},
+        {"x":0,"y":1,"width":1,"height":18,"fill":5},
+        {"x":0,"y":29,"width":1,"height":30,"fill":5},
+        {"x":0,"y":70,"width":1,"height":30,"fill":5},
+        {"x":0,"y":119,"width":40,"height":1,"fill":4},
+        {"x":39,"y":1,"width":1,"height":40,"fill":3},
+        {"x":39,"y":50,"width":1,"height":60,"fill":3},
+        {"x":30,"y":50,"width":9,"height":1,"fill":2},
+        {"x":0,"y":100,"width":20,"height":2,"fill":4},
+        {"x":20,"y":100,"width":1,"height":2,"fill":5},
+        {"x":30,"y":36,"width":9,"height":1,"fill":2},
+        {"x":1,"y":29,"width":9,"height":1,"fill":2}
+    ],
+    "worldCoords":{"x":7,"y":8},
+    "platforms":[
+        {"x1":120,"y1":900,"x2":620,"y2":900,"speed":3},
+        {"x1":20,"y1":900,"x2":20,"y2":1400,"speed":3},
+        {"x1":120,"y1":1900,"x2":120,"y2":1400,"speed":3},
+        {"x1":420,"y1":2000,"x2":420,"y2":2300,"speed":3},
+        {"x1":200,"y1":640,"x2":480,"y2":640,"speed":3}
+    ],
+    "enemies":[
+        {"type":"SwingBall","x":400,"y":10,"radius":850,"speed":10}
+    ]
+}

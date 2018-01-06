@@ -1,0 +1,22 @@
+var rooms=[[
+    {"x":10,"y":10,"width":2,"height":2},
+    {"x":12,"y":10,"width":1,"height":1},
+    {"x":12,"y":11,"width":2,"height":1},
+    {"x":13,"y":9,"width":1,"height":2},
+    {"x":12,"y":9,"width":1,"height":1},
+    {"x":8,"y":9,"width":4,"height":1},
+    {"x":7,"y":8,"width":1,"height":4},
+    {"x":5,"y":7,"width":2,"height":2},
+    {"x":4,"y":7,"width":1,"height":1},
+    {"x":4,"y":8,"width":1,"height":3},
+    {"x":4,"y":11,"width":3,"height":1},
+    {"x":9,"y":11,"width":1,"height":1},
+    {"x":9,"y":10,"width":1,"height":1},
+    {"x":8,"y":10,"width":1,"height":3},
+    {"x":3,"y":7,"width":1,"height":1},
+    {"x":5,"y":9,"width":2,"height":2}
+],[
+    {"x":10,"y":10,"width":1,"height":1},
+    {"x":11,"y":10,"width":1,"height":1},
+    {"x":12,"y":9,"width":1,"height":3}
+]];
