@@ -12,7 +12,7 @@ var playerCharacter=0;
 var hasSetup=false;
 
 var renderHitboxes=false;
-var allowZipping=true;
+var allowZipping=false;
 
 function load() {
     for (var i=0; i<numImages; i++) {
