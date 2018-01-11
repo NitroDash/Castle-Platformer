@@ -5,12 +5,16 @@ function keyboard(keyCode) {
   key.isUp = true;
   key.press = undefined;
   key.release = undefined;
+    key.onPress=null;
   //The `downHandler`
   key.downHandler = function(event) {
     if (event.keyCode === key.code) {
       if (key.isUp && key.press) key.press();
       key.isDown = true;
       key.isUp = false;
+        if (key.onPress!=null) {
+            key.onPress();
+        }
     }
     event.preventDefault();
   };

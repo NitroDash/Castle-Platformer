@@ -1,13 +1,6 @@
 var entities=[];
 
 var player;
-if (playerCharacter==0) {
-    player=new Ninja(1400,1100);
-} else if (playerCharacter==1){
-    player=new Jetpacker(1400,1100);
-} else if (playerCharacter==2) {
-    player=new Portaler(1400,1120);
-}
 var ctx;
 var bg_canvas;
 var hud_canvas;
@@ -38,16 +31,19 @@ var lastLoc={"x":1400,"y":1100,"room":0,"world":0};
 var warpDest={"x":0,"y":0,"room":0,"world":0};
 
 function setup() {
+    if (playerCharacter==0) {
+        player=new Ninja(1400,1100);
+    } else if (playerCharacter==1){
+        player=new Jetpacker(1400,1100);
+    } else if (playerCharacter==2) {
+        player=new Portaler(1400,1120);
+    }
     for (var j=0; j<numWorlds; j++) {
         visited.push([]);
         for (var i=0; i<rooms.length; i++) {
             visited[j].push(false);
         }
     }
-    var canvas=document.getElementById("canvas");
-    ctx=canvas.getContext("2d");
-    ctx.font="30px Verdana";
-    ctx.imageSmoothingEnabled=false;
     hud_canvas=document.createElement("canvas");
     hud_canvas.width=800;
     hud_canvas.height=40;

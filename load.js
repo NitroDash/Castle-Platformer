@@ -3,22 +3,18 @@ var tileset, shuriken, blob, spider, drops, fireball, platform, spikeBall,oneUp,
 var textures=[];
 var loadStatus=[];
 
-var srcs=[null,null,null,null,"images/blob.png","images/spider.png","images/snake.png","images/fireball.png","images/SpikeBall.png","images/movingPlatform.png","images/characterOutlines.png","images/door.png","images/teleporter.png","images/rocketMan.png","images/lockDoor.png","images/Bomb.png","images/drops.png","images/blockSwitch.png"];
+var srcs=[null,"images/ninja.png","images/Jetpacker.png","images/Portaler.png","images/blob.png","images/spider.png","images/snake.png","images/fireball.png","images/SpikeBall.png","images/movingPlatform.png","images/characterOutlines.png","images/door.png","images/teleporter.png","images/rocketMan.png","images/lockDoor.png","images/Bomb.png","images/drops.png","images/blockSwitch.png"];
 
 var numImages=20;
 var loaded=0;
 var playerCharacter=0;
 
-var hasSetup=false;
+var hasSetup=0;
 
 var renderHitboxes=false;
 var allowZipping=false;
 
 function load() {
-    for (var i=0; i<numImages; i++) {
-        textures.push(null);
-        loadStatus.push(0);
-    }
     textures[0]=loadImage("images/tiles.png",0);
     if (playerCharacter==0) {
         textures[1]=loadImage("images/ninja.png",1);
@@ -31,6 +27,16 @@ function load() {
         textures[2]=loadImage("images/portal.png",2);
     }
     textures[3]=loadImage("images/ball.png",3);
+}
+
+function loadSelect() {
+    for (var i=0; i<numImages; i++) {
+        textures.push(null);
+        loadStatus.push(0);
+    }
+    requestLoad(1);
+    requestLoad(2);
+    requestLoad(3);
 }
 
 function requestLoad(id) {
@@ -57,12 +63,18 @@ function loadImage(src,id) {
 
 function incrementLoad(id) {
     loaded--;
+    console.log(loaded);
     if (id!=null) {
         loadStatus[id]=2;
     }
-    if (loaded<=0&&!hasSetup) {
-        hasSetup=true;
-        setup();
+    if (loaded<=0) {
+        if (hasSetup==0) {
+            hasSetup=1;
+            setupSelect();
+        } else if (hasSetup==1) {
+            hasSetup=2;
+            setup();
+        }
     }
 }
 
