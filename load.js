@@ -63,7 +63,6 @@ function loadImage(src,id) {
 
 function incrementLoad(id) {
     loaded--;
-    console.log(loaded);
     if (id!=null) {
         loadStatus[id]=2;
     }

@@ -26,6 +26,9 @@ var pausedAnimCounter=0;
 
 var loading=false;
 
+var time={"minutes":0,"seconds":0,"decimal":0};
+var lastTime=0;
+
 var gameOver=false;
 var lastLoc={"x":1400,"y":1100,"room":0,"world":0};
 var warpDest={"x":0,"y":0,"room":0,"world":0};
@@ -75,6 +78,7 @@ function setup() {
     entities.push(player);
     loadLevel(0,0,function() {
         updateHUD();
+        lastTime=Date.now();
         window.requestAnimationFrame(gameLoop);
     });
 }
@@ -276,6 +280,11 @@ function update() {
                 player.managePauses();
             }
         }
+        if (pauseMenu.teleportCounter==0) {
+            advanceTimer();
+        } else {
+            resetTimer();
+        }
     } else if (fadeDir>=0) {
         fadeLength+=dFade*20;
         if ((fadeDir<2&&fadeLength>=600)||(fadeDir>=2&&fadeLength>=800)) {
@@ -332,6 +341,7 @@ function update() {
             fadeDir=-1;
             fadeLength=0;
         }
+        resetTimer();
     } else if (player.hp<=0) {
         if (fadeLength==0) {
             player.lives--;
@@ -362,6 +372,7 @@ function update() {
             player.hp=player.maxHP;
             updateHUD();
         }
+        resetTimer();
     } else {
         for (var i=0; i<entities.length; i++) {
             entities[i].update();
@@ -375,7 +386,38 @@ function update() {
                 i--;
             }
         }
+        advanceTimer();
     }
+}
+
+function advanceTimer() {
+    var currentTime=Date.now();
+    time.decimal+=currentTime-lastTime;
+    while (time.decimal>=1000) {
+        time.decimal-=1000;
+        time.seconds++;
+    }
+    while (time.seconds>=60) {
+        time.seconds-=60;
+        time.minutes++;
+    }
+    lastTime=currentTime;
+}
+
+function resetTimer() {
+    lastTime=Date.now();
+}
+
+function forceLength(num, digits) {
+    var result=""+num;
+    while (result.length<digits) {
+        result="0"+result;
+    }
+    return result;
+}
+
+function getTimeString() {
+    return forceLength(time.minutes,2)+":"+forceLength(time.seconds,2)+"."+forceLength(time.decimal,3);
 }
 
 function updateCamera() {
@@ -461,4 +503,6 @@ function render() {
         pauseMenu.render(ctx);
         ctx.translate(0,600-Math.abs(pausedAnimCounter));
     }
+    ctx.fillStyle="#fff";
+    ctx.fillText(getTimeString(),520,30);
 }
