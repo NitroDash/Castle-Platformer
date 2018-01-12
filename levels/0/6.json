@@ -14,7 +14,8 @@
         {"x":0,"y":100,"width":20,"height":2,"fill":4},
         {"x":20,"y":100,"width":1,"height":2,"fill":5},
         {"x":30,"y":36,"width":9,"height":1,"fill":2},
-        {"x":1,"y":29,"width":9,"height":1,"fill":2}
+        {"x":1,"y":29,"width":9,"height":1,"fill":2},
+        {"x":1,"y":70,"width":10,"height":1,"fill":2}
     ],
     "worldCoords":{"x":7,"y":8},
     "platforms":[
