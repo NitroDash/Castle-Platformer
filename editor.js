@@ -72,6 +72,10 @@ class Enemy {
     }
 }
 
+function setupSelect() {
+    load();
+}
+
 function setup() {
     for (var i=4; i<numImages; i++) {
         requestLoad(i);

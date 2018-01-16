@@ -13,6 +13,7 @@ var hasSetup=0;
 
 var renderHitboxes=false;
 var allowZipping=false;
+var ezDoors=false;
 
 function load() {
     textures[0]=loadImage("images/tiles.png",0);

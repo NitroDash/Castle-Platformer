@@ -285,7 +285,11 @@ class Door extends Entity {
         this.ID=ID;
         this.dest=dest;
         while (filledDoors.length<=ID){
-            filledDoors.push(0);
+            if (ezDoors) {
+                filledDoors.push(6);
+            } else {
+                filledDoors.push(0);
+            }
         }
         this.numFilled=filledDoors[ID];
         this.open=false;
@@ -311,7 +315,7 @@ class Door extends Entity {
             if (this.numFilled==6) {
                 this.open=true;
             }
-        } else if (this.open&&keys[1].isDown&&player.rect.intersects(this.rect)) {
+        } else if (this.open&&keys[1].isDown&&player.grounded&&player.rect.intersects(this.rect)) {
             warpTo(this.dest);
         }
     }
@@ -393,6 +397,10 @@ class RocketMan extends Enemy {
         this.hitTile=false;
         this.hp=100;
         this.shootCounter=200;
+        if (roomCoords[world][level.worldCoords.x+Math.floor(this.rect.getCenterX()/800)][level.worldCoords.y+Math.floor(this.rect.getCenterY()/600)]<0) {
+            this.onScreen=false;
+            this.hp=0;
+        }
     }
     
     update() {
@@ -623,11 +631,15 @@ class BombDebris extends Entity {
     }
 }
 
+function getSign(num) {
+    return (num>0)?1:-1;
+}
+
 class BlockSwitch extends Entity {
     constructor(x,y,speed,active) {
         super(x,y,160,40);
         this.speed=160/speed;
-        this.tickerX=0;
+        this.tickerX=1;
         if (active) {
             this.active=true;
         } else {
@@ -636,8 +648,9 @@ class BlockSwitch extends Entity {
     }
     
     update() {
+        var sign=getSign(this.tickerX);
         this.tickerX+=this.speed;
-        if (this.tickerX==0) {
+        if (sign!=getSign(this.tickerX)) {
             if (this.active) {
                 flipBlocks();
             }

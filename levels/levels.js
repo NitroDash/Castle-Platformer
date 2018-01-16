@@ -18,5 +18,8 @@ var rooms=[[
 ],[
     {"x":10,"y":10,"width":1,"height":1},
     {"x":11,"y":10,"width":1,"height":1},
-    {"x":12,"y":9,"width":1,"height":3}
+    {"x":12,"y":9,"width":1,"height":3},
+    {"x":10,"y":11,"width":2,"height":2},
+    {"x":12,"y":12,"width":1,"height":1},
+    {"x":9,"y":12,"width":1,"height":2}
 ]];
