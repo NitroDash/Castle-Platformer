@@ -3,7 +3,7 @@ var tileset, shuriken, blob, spider, drops, fireball, platform, spikeBall,oneUp,
 var textures=[];
 var loadStatus=[];
 
-var srcs=[null,"images/ninja.png","images/Jetpacker.png","images/Portaler.png","images/blob.png","images/spider.png","images/snake.png","images/fireball.png","images/SpikeBall.png","images/movingPlatform.png","images/characterOutlines.png","images/door.png","images/teleporter.png","images/rocketMan.png","images/lockDoor.png","images/Bomb.png","images/drops.png","images/blockSwitch.png"];
+var srcs=[null,"images/ninja.png","images/Jetpacker.png","images/Portaler.png","images/blob.png","images/spider.png","images/snake.png","images/fireball.png","images/SpikeBall.png","images/movingPlatform.png","images/characterOutlines.png","images/door.png","images/teleporter.png","images/rocketMan.png","images/lockDoor.png","images/Bomb.png","images/drops.png","images/blockSwitch.png","images/laserMan.png","images/laserOrb.png"];
 
 var numImages=20;
 var loaded=0;
@@ -14,6 +14,7 @@ var hasSetup=0;
 var renderHitboxes=false;
 var allowZipping=false;
 var ezDoors=false;
+var fillMap=false;
 
 function load() {
     textures[0]=loadImage("images/tiles.png",0);

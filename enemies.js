@@ -22,6 +22,13 @@ class Enemy extends Entity {
         return 1;
     }
     
+    explode(num, power) {
+        this.onScreen=false;
+        for (var i=0; i<num; i++) {
+            entities.push(new BombDebris(this.rect.getCenterX(),this.rect.getCenterY(),Math.random()*power*2-power,Math.random()*(power*-1.2)-10,false));
+        }
+    }
+    
     manageDeath() {
         if (Math.random()<0.7) {
             entities.push(new Heart(this.rect.getCenterX(),this.rect.getCenterY()));
@@ -397,8 +404,10 @@ class RocketMan extends Enemy {
         this.hitTile=false;
         this.hp=100;
         this.shootCounter=200;
+        this.shouldExplode=true;
         if (roomCoords[world][level.worldCoords.x+Math.floor(this.rect.getCenterX()/800)][level.worldCoords.y+Math.floor(this.rect.getCenterY()/600)]<0) {
             this.onScreen=false;
+            this.shouldExplode=false;
             this.hp=0;
         }
     }
@@ -483,6 +492,9 @@ class RocketMan extends Enemy {
     
     manageDeath() {
         entities.push(new MultiUp(this.rect.getCenterX(),this.rect.getCenterY()));
+        if (this.shouldExplode) {
+            this.explode(15,8);
+        }
         openDoors();
     }
 }
@@ -553,7 +565,7 @@ class Bomb extends Entity {
             if (this.fuseTimer>=240) {
                 this.onScreen=false;
                 for (var i=0; i<6; i++) {
-                    entities.push(new BombDebris(this.rect.getCenterX(),this.rect.getCenterY(),Math.random()*8-4,Math.random()*-5-10));
+                    entities.push(new BombDebris(this.rect.getCenterX(),this.rect.getCenterY(),Math.random()*8-4,Math.random()*-5-10,true));
                 }
             }
         }
@@ -593,7 +605,7 @@ class Bomb extends Entity {
 }
 
 class BombDebris extends Entity {
-    constructor(x,y,dx,dy) {
+    constructor(x,y,dx,dy,dangerous) {
         super(x-15,y-20,30,20);
         this.dx=dx;
         this.dy=dy;
@@ -602,7 +614,7 @@ class BombDebris extends Entity {
         } else {
             this.dir=1;
         }
-        this.dangerous=true;
+        this.dangerous=dangerous;
     }
     
     getAlignment() {
@@ -664,4 +676,355 @@ class BlockSwitch extends Entity {
         ctx.fillStyle="#fff";
         ctx.fillRect(this.tickerX+this.rect.getCenterX()-3,this.rect.getTop(),6,40);
     }
+}
+
+class LaserMan extends Enemy {
+    constructor(x,y) {
+        super(x-80,y-80,160,160);
+        this.hp=150;
+        this.shouldExplode=true;
+        this.theta=0;
+        this.dTheta=0.05;
+        this.orbs=[];
+        if (roomCoords[world][level.worldCoords.x+Math.floor(this.rect.getCenterX()/800)][level.worldCoords.y+Math.floor(this.rect.getCenterY()/600)]<0) {
+            this.onScreen=false;
+            this.shouldExplode=false;
+            this.hp=0;
+        } else {
+            this.producePairs();
+        }
+        this.state=0;
+        this.vertTheta=0;
+        this.horizTheta=0;
+    }
+    
+    producePairs() {
+        if (this.hp>100) {
+            this.producePair(0,1);
+        } else if (this.hp>60) {
+            this.producePair(Math.PI/2,0);
+        } else {
+            this.producePair(Math.PI/2,0);
+            this.producePair(0,1);
+        }
+        this.state=0;
+    }
+    
+    update() {
+        this.theta+=this.dTheta;
+        if (this.theta>=Math.PI*6) {
+            this.dTheta=Math.PI;
+        }
+        if (this.theta>=100) {
+            this.theta=0;
+            this.dTheta=0;
+            this.releaseOrbs();
+        }
+        for (var i=0; i<this.orbs.length; i++) {
+            if (this.orbs[i].onScreen==false) {
+                this.orbs.splice(i,1);
+                i--;
+            }
+        }
+        if (this.onScreen&&this.orbs.length==0) {
+            this.dTheta=0.05;
+            this.producePairs();
+        }
+        if (this.state==0) {
+            this.vertTheta+=(this.hp<=60)?0.015:0.01;
+            this.rect.y=550+350*Math.cos(this.vertTheta)-80;
+            if (this.hp<=100) {
+                this.horizTheta+=(this.hp<=60)?0.047:0.032;
+                this.rect.x=400+100*Math.sin(this.horizTheta)-80;
+            }
+        }
+    }
+    
+    producePair(offset,orient) {
+        this.orbs.push(new LaserOrb(this.rect.getCenterX(),this.rect.getCenterY(),offset,this,orient,this.orbs.length));
+        this.orbs.push(new LaserOrb(this.rect.getCenterX(),this.rect.getCenterY(),offset+Math.PI,this,orient,this.orbs.length));
+        entities.splice(1,0,this.orbs[this.orbs.length-2]);
+        entities.splice(1,0,this.orbs[this.orbs.length-1]);
+    }
+    
+    releaseOrbs() {
+        for (var i=0; i<this.orbs.length; i++) {
+            this.orbs[i].release();
+        }
+        this.state=1;
+    }
+    
+    render(ctx) {
+        if (this.onScreen&&!this.justHit) {
+            ctx.drawImage(textures[18],this.rect.getLeft(),this.rect.getTop(),this.rect.width,this.rect.height);
+        }
+        this.justHit=false;
+    }
+    
+    manageDeath() {
+        entities.push(new MultiUp(this.rect.getCenterX(),this.rect.getCenterY()));
+        for (var i=0; i<this.orbs.length; i++) {
+            this.orbs[i].shouldExplode=true;
+        }
+        if (this.shouldExplode) {
+            this.explode(40,15);
+        }
+        openDoors();
+    }
+}
+
+class LaserOrb extends Enemy {
+    constructor(x,y,theta,parent,orient,id) {
+        super(x-30,y-30,60,60);
+        this.theta=theta;
+        this.parent=parent;
+        this.state=0;
+        this.radius=0;
+        this.orient=orient;
+        this.hp=1;
+        this.dx=0;
+        this.dy=0;
+        this.updateOrb=null;
+        this.fireTimer=0;
+        this.id=id;
+        this.yOffset=0;
+        this.shouldExplode=false;
+    }
+    
+    update() {
+        if (this.state==0) {
+            this.radius+=10;
+            if (this.radius>=150) {
+                this.radius=150;
+                this.state=1;
+            }
+            this.setPosition(this.theta+this.parent.theta);
+        } else if (this.state==1) {
+            this.setPosition(this.theta+this.parent.theta);
+        } else if (this.state==2) {
+            this.rect.translate(this.dx,this.dy);
+            if (this.rect.getCenterX()<=0) {
+                this.rect.x=-this.rect.width/2;
+                this.state=3;
+                this.updateOrb=this.updateHorizOrb;
+            } else if (this.rect.getCenterX()>=800) {
+                this.rect.x=800-this.rect.width/2;
+                this.state=3;
+                this.updateOrb=this.updateHorizOrb;
+            } else if (this.dy!=0&&Math.abs(this.rect.getCenterY()-cameraY-this.yOffset)<30) {
+                this.rect.y=cameraY+this.yOffset-this.rect.width/2;
+                this.state=3;
+                this.updateOrb=this.updateVertOrb;
+                this.yOffset=this.yOffset-this.rect.height/2;
+            }
+        } else if (this.state==3) {
+            this.updateOrb();
+        } else if (this.state==4) {
+            this.fireTimer++;
+            if (this.fireTimer>450) {
+                this.onScreen=false;
+            }
+        }
+        if (this.state!=4&&this.shouldExplode) {
+            this.onScreen=false;
+        }
+    }
+    
+    setPosition(theta) {
+        this.rect.x=this.parent.rect.getCenterX()+this.radius*Math.cos(theta)-this.rect.width/2;
+        this.rect.y=this.parent.rect.getCenterY()+this.radius*Math.sin(theta)-this.rect.height/2;
+    }
+    
+    render() {
+        ctx.drawImage(textures[19],30*this.orient,0,30,30,this.rect.getLeft(),this.rect.getTop(),this.rect.width,this.rect.height);
+    }
+    
+    release() {
+        if (this.state==1) {
+            this.state=2;
+            this.setPosition(this.theta);
+            this.dx=Math.round(10*Math.cos(this.theta));
+            this.dy=Math.round(10*Math.sin(this.theta));
+            if (this.dy>0) {
+                this.yOffset=600;
+                if (cameraY+this.yOffset<this.rect.getCenterY()) {
+                    this.dy*=-1;
+                }
+            } else {
+                this.yOffset=0;
+                if (cameraY>this.rect.getCenterY()) {
+                    this.dy*=-1;
+                }
+            }
+        }
+    }
+    
+    updateHorizOrb() {
+        if (this.fireTimer<210) {
+            if (this.rect.getCenterY()-player.rect.getCenterY()>5) {
+                this.rect.translate(0,-9);
+            } else if (this.rect.getCenterY()-player.rect.getCenterY()<-5) {
+                this.rect.translate(0,9);
+            } else {
+                this.rect.y=player.rect.getCenterY()-this.rect.height/2;
+            }
+        } else if (this.fireTimer<300){
+            if (this.fireTimer%30==15) {
+                this.orient=2;
+            } else if (this.fireTimer%30==0) {
+                this.orient=1;
+            }
+        } else {
+            this.state=4;
+            if (this.id%2==0) {
+                entities.push(new HorizLaser(this.rect.getCenterY()));
+            }
+        }
+        if (this.fireTimer==0) {
+            if (this.parent.orbs[this.id+((this.id%2==0)?1:-1)].state==3) {
+                this.fireTimer++;
+            }
+        } else {
+            this.fireTimer++;
+        }
+    }
+    
+    updateVertOrb() {
+        if (this.fireTimer<210) {
+            if (this.rect.getCenterX()-player.rect.getCenterX()>5) {
+                this.rect.translate(-9,0);
+            } else if (this.rect.getCenterX()-player.rect.getCenterX()<-5) {
+                this.rect.translate(9,0);
+            } else {
+                this.rect.x=player.rect.getCenterX()-this.rect.width/2;
+            }
+            this.rect.y=cameraY+this.yOffset;
+        } else if (this.fireTimer<300){
+            if (this.fireTimer%30==15) {
+                this.orient=2;
+            } else if (this.fireTimer%30==0) {
+                this.orient=0;
+            }
+        } else {
+            this.state=4;
+            if (this.id%2==1) {
+                entities.push(new VertLaser(this.rect.getCenterX(),this.rect.getCenterY()));
+            }
+        }
+        if (this.fireTimer==0) {
+            if (this.parent.orbs[this.id+((this.id%2==0)?1:-1)].state==3) {
+                this.fireTimer++;
+            }
+        } else {
+            this.fireTimer++;
+        }
+    }
+    
+    getHit(damage) {}
+    
+    manageDeath() {
+        this.explode(5,8);
+    }
+}
+
+class HorizLaser extends Enemy {
+    constructor(y) {
+        super(0,y-10,800,20);
+        this.timer=0;
+        this.particles=[];
+        for (var i=0; i<20; i++) {
+            this.particles.push({"x":Math.random()*800,"y":this.rect.getTop()+2+Math.random()*15,"dx":(Math.random()<0.5)?-25:25});
+        }
+        this.canHitBoss=true;
+    }
+    
+    update() {
+        this.timer++;
+        if (this.timer>150) {
+            this.onScreen=false;
+        } else {
+            for (var i=0; i<this.particles.length; i++) {
+                this.particles[i].x+=this.particles[i].dx;
+                if (this.particles[i].x>800) {
+                    this.particles[i].x=0;
+                } else if (this.particles[i].x<0) {
+                    this.particles[i].x=800;
+                }
+            }
+        }
+        if (this.canHitBoss) {
+            for (var i=0; i<entities.length; i++) {
+                if (entities[i].orbs!=null&&entities[i].hitboxIntersects(this)) {
+                    entities[i].getHit(30);
+                    this.canHitBoss=false;
+                }
+            }
+        }
+    }
+    
+    render(ctx) {
+        ctx.fillStyle="#f00";
+        ctx.fillRect(this.rect.getLeft(),this.rect.getTop(),this.rect.width,this.rect.height);
+        ctx.fillStyle="#fff";
+        for (var i=0; i<this.particles.length; i++) {
+            ctx.fillRect(this.particles[i].x-40,this.particles[i].y,80,1);
+        }
+    }
+    
+    getHit(damage) {
+        
+    }
+    
+    manageDeath() {}
+}
+
+class VertLaser extends Enemy {
+    constructor(x,y) {
+        super(x-10,y,20,600);
+        this.timer=0;
+        this.particles=[];
+        for (var i=0; i<20; i++) {
+            this.particles.push({"x":Math.random()*15+2+this.rect.getLeft(),"y":this.rect.getTop()+40+Math.random()*520,"dy":(Math.random()<0.5)?-25:25});
+        }
+        this.canHitBoss=true;
+    }
+    
+    update() {
+        this.timer++;
+        if (this.timer>150) {
+            this.onScreen=false;
+        } else {
+            for (var i=0; i<this.particles.length; i++) {
+                this.particles[i].y+=this.particles[i].dy;
+                if (this.particles[i].y>this.rect.getBottom()-40) {
+                    this.particles[i].y=this.rect.getTop()+40;
+                } else if (this.particles[i].y<this.rect.getTop()+40) {
+                    this.particles[i].y=this.rect.getBottom()-40;
+                }
+            }
+        }
+        if (this.canHitBoss) {
+            for (var i=0; i<entities.length; i++) {
+                if (entities[i].orbs!=null&&entities[i].hitboxIntersects(this)) {
+                    entities[i].getHit(30);
+                    this.canHitBoss=false;
+                }
+            }
+        }
+    }
+    
+    render(ctx) {
+        ctx.fillStyle="#f00";
+        ctx.fillRect(this.rect.getLeft(),this.rect.getTop(),this.rect.width,this.rect.height);
+        ctx.fillStyle="#fff";
+        for (var i=0; i<this.particles.length; i++) {
+            ctx.fillRect(this.particles[i].x,this.particles[i].y-40,1,80);
+        }
+    }
+    
+    getHit(damage) {
+        
+    }
+    
+    manageDeath() {}
 }

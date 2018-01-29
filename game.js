@@ -43,8 +43,8 @@ function setup() {
     }
     for (var j=0; j<numWorlds; j++) {
         visited.push([]);
-        for (var i=0; i<rooms.length; i++) {
-            visited[j].push(false);
+        for (var i=0; i<rooms[j].length; i++) {
+            visited[j].push(fillMap);
         }
     }
     hud_canvas=document.createElement("canvas");
@@ -171,12 +171,18 @@ function makeLevel() {
                     requestLoad(7);
                     break;
                 case "LockDoor":
-                    entities.push(new LockDoor(level.enemies[i].x,level.enemies[i].y,level.enemies[i].height));
+                    entities.splice(0,0,new LockDoor(level.enemies[i].x,level.enemies[i].y,level.enemies[i].height));
                     requestLoad(14);
                     break;
                 case "BlockSwitch":
                     entities.splice(0,0,new BlockSwitch(level.enemies[i].x,level.enemies[i].y,level.enemies[i].speed,level.enemies[i].active));
                     requestLoad(17);
+                    break;
+                case "LaserMan":
+                    entities.push(new LaserMan(level.enemies[i].x,level.enemies[i].y));
+                    requestLoad(18);
+                    requestLoad(7);
+                    requestLoad(19);
                     break;
             }
         }
@@ -323,12 +329,10 @@ function update() {
                 room=Math.abs(roomCoords[world][newCoords.x][newCoords.y]);
             }
             loadLevel(room,world,function() {
-                console.log(player.rect.y);
                 if (fadeDir<4) {
                     player.rect.x+=800*(newCoords.x-level.worldCoords.x);
                     player.rect.y+=600*(newCoords.y-level.worldCoords.y);
                 }
-                console.log(player.rect.y);
                 lastLoc.x=player.rect.x;
                 lastLoc.y=player.rect.y;
                 lastLoc.room=Math.abs(roomCoords[world][newCoords.x][newCoords.y]);
