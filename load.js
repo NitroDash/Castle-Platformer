@@ -16,6 +16,8 @@ var allowZipping=false;
 var ezDoors=false;
 var fillMap=false;
 
+var mapColor="#f0f";
+
 function load() {
     textures[0]=loadImage("images/tiles.png",0);
     if (playerCharacter==0) {

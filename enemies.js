@@ -512,6 +512,7 @@ class LockDoor extends Entity {
         super(x,y,20,height*20);
         this.height=height;
         this.renderHeight=0;
+        this.shouldClose=false;
         this.open=false;
     }
     
@@ -520,12 +521,15 @@ class LockDoor extends Entity {
     }
     
     update() {
-        if (this.renderHeight<this.height&&!this.open) {
+        if (this.renderHeight<this.height&&!this.open&&this.shouldClose) {
             this.renderHeight++;
         } else if (this.renderHeight>0&&this.open) {
             this.renderHeight--;
         }
-        if (!this.open&&player.rect.intersects(this.rect)) {
+        if (!this.shouldClose) {
+            this.shouldClose=Math.abs(player.rect.getCenterX()-this.rect.getCenterX())+Math.abs(player.rect.getCenterY()-this.rect.getCenterY())>300;
+        }
+        if (!this.open&&this.shouldClose&&player.rect.intersects(this.rect)) {
             player.ejectFromRect(this.rect.getLeft(),this.rect.getTop(),this.rect.width,this.rect.height,[true,true,false,false]);
             player.hitWall(this.rect);
         }

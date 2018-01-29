@@ -243,7 +243,7 @@ function updateMap() {
 function drawRoom(x,y,width,height,mctx) {
     mctx.fillStyle="#fff";
     mctx.fillRect(x,y,width,height);
-    mctx.fillStyle="#f0f";
+    mctx.fillStyle=mapColor;
     mctx.fillRect(x+1,y+1,width-2,height-2);
 }
 
