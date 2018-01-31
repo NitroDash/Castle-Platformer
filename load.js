@@ -1,5 +1,3 @@
-var tileset, shuriken, blob, spider, drops, fireball, platform, spikeBall,oneUp,smoke,playerImg,outlines,portal,door,teleporter,rocketMan,lockDoor,bomb,nick;
-
 var textures=[];
 var loadStatus=[];
 
@@ -11,10 +9,12 @@ var playerCharacter=0;
 
 var hasSetup=0;
 
+var debug=false;
+
 var renderHitboxes=false;
-var allowZipping=false;
-var ezDoors=false;
-var fillMap=false;
+var allowZipping=debug;
+var ezDoors=debug;
+var fillMap=debug;
 
 var mapColor="#f0f";
 
